@@ -1,5 +1,4 @@
 from torchvision.datasets import ImageFolder
-from torch.utils.data import random_split
 
 from splitter import SplitterRegistry, BaseSplitter
 from datamodule import DataModule
@@ -48,5 +47,5 @@ class ImageDataModule(DataModule):
             transform=self.train_transform
         )
         
-        ## Split the dataset (TO ADD)
-        self.train_dataset, self.val_dataset, self.test_dataset = self.splitter.split(dataset, self.split_ratio)
+        ## Split the dataset
+        self.folds = self.splitter.split(dataset, self.split_ratio)
