@@ -1,4 +1,3 @@
-import torch
 from torchvision.transforms import v2
 
 class TransformsWrapper:
