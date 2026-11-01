@@ -1,4 +1,4 @@
-from .transforms import TransformsWrapper
+from .transforms_wrapper import TransformsWrapper
 
 __version__ = "1.0.0"
 
