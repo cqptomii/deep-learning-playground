@@ -1,20 +1,32 @@
-from .history import History
 from tasks import BaseTask
+from engine import Evaluator, History
+from callback import BaseCallback
+
+import torch
+from typing import List
 from torch.nn.utils import clip_grad_norm_
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 class Trainer:
     def __init__(
         self,
+        train_loader,
+        val_loader,
         model,
         task : BaseTask,
-        optimizer,
-        evaluator,
+        optimizer : torch.optim.Optimizer   ,
+        evaluator : Evaluator,
         scheduler = None,
-        callbacks = None,
+        callbacks : List[BaseCallback] = None,
         device : str ="cpu",
         grad_clip=None,
+        epochs : int = 10
     ):
+        ## DataLoaders
+        self.train_loader = train_loader
+        self.val_loader = val_loader
+        
+        ## Model
         self.model = model.to(device)
         self.task = task
         self.optimizer = optimizer
@@ -25,20 +37,29 @@ class Trainer:
         self.device = device
         self.grad_clip = grad_clip
 
+        self.epochs = epochs
         self.current_epoch = 0
         
         ## Initialize the history where we will store the metrics for each epoch
         self.history = History()
       
-    def train_epoch(self, train_loader):
+    def _train_epoch(self, epoch : int):
         
         ## Set the model to training mode
         self.model.train()
         
         total_loss = 0.0
-        total_samples = 0        
+        total_samples = 0
+        
+        
+        ## Call the callbacks at the beginning of the training epoch
+        for callback in self.callbacks:
+            callback.on_train_batch_begin(
+                trainer=self, 
+                batch_idx=epoch
+            )
 
-        for batch in train_loader:
+        for batch in enumerate(self.train_loader):
             ## Move the batch data to the specified device
             batch = self.task.to_device(batch, self.device)
             
@@ -67,48 +88,67 @@ class Trainer:
             total_loss += loss.item() * batch_size
             total_samples += batch_size
             
+            ## Update the metrics for the current batch
+            for metric in self.task.train_metrics:
+                metric.update(outputs, batch)
+                
+            ## Call the callbacks at the end of each training batch
+            for callback in self.callbacks:
+                callback.on_train_batch_end(
+                    trainer=self, 
+                    batch_idx=epoch
+                )
+            
         if total_samples == 0:
             raise ValueError("No samples were processed during the training epoch.")
-
+        
         results = {
             "train_loss": total_loss / total_samples,
         }
         
-        ## Compute and insert metrics into the results dictionary (TO DO)
+        # Compute epoch metrics
+        for metric in self.task.train_metrics:
+            results[f"train_{metric.metric_name}"] = metric.compute()
+
         
-        return results
+        ## Call the callbacks at the end of the training epoch
+        for callback in self.callbacks:
+            callback.on_epoch_end(
+                trainer=self,
+                epoch=self.current_epoch,
+                metrics=results
+            )
             
     
-    def fit(self, train_loader, val_loader, epochs):
+    def fit(self):
 
+        ## Process Callbacks at the beginning of training
         for callback in self.callbacks:
             callback.on_train_begin(self)
 
-        for epoch in range(epochs):
+        for epoch in range(self.epochs):
 
             self.current_epoch = epoch + 1
 
+            ## Process Callbacks at the beginning of each epoch
             for callback in self.callbacks:
-                callback.on_epoch_begin(self)
+                callback.on_epoch_begin(
+                    trainer=self,
+                    epoch=self.current_epoch
+                )
 
-            # Training
-            train_metrics = self.train_epoch(train_loader)
+            ## Training
+            self._train_epoch(epoch=self.current_epoch)
 
-            # Validation
-            val_metrics = self.evaluator.evaluate(
-                self.model,
-                val_loader,
-            )
+            ## Validation
+            val_metrics = self.evaluator.evaluate()
 
             ## Update the learning rate scheduler if it is provided
             if self.scheduler is not None:
                 if isinstance(self.scheduler, ReduceLROnPlateau):
-                    self.scheduler.step(val_metrics["loss"])
+                    self.scheduler.step(val_metrics["val_loss"])
                 else:
                     self.scheduler.step()
-
-            for callback in self.callbacks:
-                callback.on_epoch_end(self)
 
         for callback in self.callbacks:
             callback.on_train_end(self)

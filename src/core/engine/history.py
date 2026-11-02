@@ -4,14 +4,41 @@ import pandas as pd
 class History:
 
     def __init__(self):
-        self.records = []
+        self.batch_records = []
+        self.epoch_records = []
 
-    def log(self, epoch: int, metrics: dict):
-        record = {"epoch": epoch, **metrics}
-        self.records.append(record)
+    def log_batch(
+        self,
+        epoch: int,
+        step: int,
+        stage: str,
+        metrics: dict,
+        **kwargs
+    ):
+        self.batch_records.append({
+            "epoch": epoch,
+            "step": step,
+            "stage": stage,
+            **metrics,
+            **kwargs
+        })
 
-    def to_dataframe(self):
-        return pd.DataFrame(self.records)
+    def log_epoch(
+        self,
+        epoch: int,
+        stage: str,
+        metrics: dict,
+        **kwargs
+    ):
+        self.epoch_records.append({
+            "epoch": epoch,
+            "stage": stage,
+            **metrics,
+            **kwargs
+        })
 
-    def save(self, path: str):
-        self.to_dataframe().to_csv(path, index=False)
+    def batch_dataframe(self):
+        return pd.DataFrame(self.batch_records)
+
+    def epoch_dataframe(self):
+        return pd.DataFrame(self.epoch_records)

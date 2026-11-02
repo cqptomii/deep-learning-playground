@@ -37,7 +37,7 @@ class BaseCallback(ABC):
             trainer (Trainer): The trainer object that is calling the callback.
         """
         pass
-    
+
     def on_train_end(self, trainer : Trainer):
         """Method call at the end of the train cycle
     
@@ -46,7 +46,7 @@ class BaseCallback(ABC):
         """
         pass
     
-    def on_train_batch_end(self, trainer : Trainer, batch_idx : int, metrics : dict):
+    def on_train_batch_end(self, trainer : Trainer, batch_idx : int):
         """Method call at the end of each training batch
 
         Args:
