@@ -1,12 +1,27 @@
+from typing import List
+
+from metrics import BaseMetric
 from tasks import BaseTask
 from torch import nn
 
 class ClassificationTask(BaseTask):
     
-    def __init__(self, metrics, loss_fn = nn.CrossEntropyLoss()):
-        self.metrics = metrics
+    def __init__(self, 
+                train_metrics : List[BaseMetric], 
+                test_metrics : List[BaseMetric],
+                loss_fn = nn.CrossEntropyLoss()):
+        self.train_metrics = train_metrics
+        self.test_metrics = test_metrics
         self.loss_fn = loss_fn
         
+    @property
+    def train_metrics(self):
+        return self.train_metrics
+
+    @property
+    def test_metrics(self):
+        return self.test_metrics
+
     def to_device(self, batch, device : str):
         """Method to move the batch data to the specified device
 
@@ -44,3 +59,6 @@ class ClassificationTask(BaseTask):
         _, labels = batch
         
         return self.loss_fn(outputs, labels)
+    
+    def get_batch_size(self, batch):
+        return batch[0].size(0)

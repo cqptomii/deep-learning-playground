@@ -5,7 +5,12 @@ class BaseTask(ABC):
 
     @property
     @abstractmethod
-    def metrics(self):
+    def train_metrics(self):
+        pass
+    
+    @property
+    @abstractmethod
+    def test_metrics(self):
         pass
 
     @abstractmethod
