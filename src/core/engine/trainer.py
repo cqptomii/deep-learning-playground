@@ -28,7 +28,7 @@ class Trainer:
         self.test_loader = test_loader
         
         ## Create the Evaluator object
-        self.evaluator = Evaluator(task=task)
+        self.evaluator = Evaluator(task=task, device=device)
         
         ## Model
         self.model = model.to(device)
@@ -37,6 +37,8 @@ class Trainer:
         self.scheduler = scheduler
 
         self.callbacks = callbacks or []
+        self.stop_training = False    
+    
         self.device = device
         self.grad_clip = grad_clip
 
@@ -47,13 +49,13 @@ class Trainer:
         self.history = History()
       
     def _train_epoch(self, epoch : int):
-        """_summary_
+        """Method to train the model for one epoch.
 
         Args:
-            epoch (int): _description_
+            epoch (int): Current epoch number
 
         Raises:
-            ValueError: _description_
+            ValueError: If no samples were processed during the training epoch.
         """
         
         ## Set the model to training mode
@@ -131,13 +133,13 @@ class Trainer:
             )
         
     def _validate(self, epoch : int):
-        """_summary_
+        """Method to validate the model
 
         Args:
-            epoch (int): _description_
+            epoch (int): Current epoch number
 
         Returns:
-            _type_: _description_
+            dict: Results of the evaluation on the validation set
         """
         ## Call the callbacks at the beginning of the validation phase
         for callback in self.callbacks:
@@ -160,10 +162,10 @@ class Trainer:
         return results
     
     def fit(self):
-        """_summary_
+        """ Method to train the mode
 
         Returns:
-            _type_: _description_
+            History: The training history object.
         """
 
         ## Process Callbacks at the beginning of training
@@ -203,7 +205,7 @@ class Trainer:
         """Method to test the model on the test dataloader
 
         Returns:
-            dict: _description_
+            dict: Results of the evaluation on the test set
         """
         ## Call the callbacks at the beginning of the test phase
         for callback in self.callbacks:
@@ -225,7 +227,13 @@ class Trainer:
         return results
     
     
-    
+    def save_model(self, path : str):
+        """Method to save the model
+
+        Args:
+            path (str): Path to save the model
+        """
+        torch.save(self.model.state_dict(), path)
     def get_history(self):
         """Method to get the training history
 
