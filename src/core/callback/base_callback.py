@@ -37,6 +37,14 @@ class BaseCallback(ABC):
             trainer (Trainer): The trainer object that is calling the callback.
         """
         pass
+    
+    def on_test_begin(self, trainer : Trainer):
+        """Method call at the beginning of the test phase
+    
+        Args:
+            trainer (Trainer): The trainer object that is calling the callback.
+        """
+        pass
 
     def on_train_end(self, trainer : Trainer):
         """Method call at the end of the train cycle
@@ -72,6 +80,15 @@ class BaseCallback(ABC):
             trainer (Trainer): The trainer object that is calling the callback.
             epoch (int): The current epoch.
             metrics (dict): The metrics for the current epoch.
+        """
+        pass
+    
+    def on_test_end(self, trainer : Trainer, metrics : dict):
+        """Method call at the end of the test phase
+
+        Args:
+            trainer (Trainer): The trainer object that is calling the callback.
+            metrics (dict): The metrics for the test phase.
         """
         pass
 

@@ -32,4 +32,17 @@ class MetricLogger(BaseCallback):
             stage="validation",
             metrics=metrics
         )
+        
+    def on_test_end(self, trainer : Trainer, metrics : dict):
+        """Method to save the epoch test metrics
+
+        Args:
+            trainer (Trainer): Trainer object
+            metrics (dict): Dictionary of metrics
+        """
+        trainer.history.log_epoch(
+            epoch=trainer.current_epoch,
+            stage="test",
+            metrics=metrics
+        )
     

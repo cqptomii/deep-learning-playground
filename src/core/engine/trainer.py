@@ -12,10 +12,10 @@ class Trainer:
         self,
         train_loader,
         val_loader,
+        test_loader,
         model,
         task : BaseTask,
-        optimizer : torch.optim.Optimizer   ,
-        evaluator : Evaluator,
+        optimizer : torch.optim.Optimizer,
         scheduler = None,
         callbacks : List[BaseCallback] = None,
         device : str ="cpu",
@@ -25,12 +25,15 @@ class Trainer:
         ## DataLoaders
         self.train_loader = train_loader
         self.val_loader = val_loader
+        self.test_loader = test_loader
+        
+        ## Create the Evaluator object
+        self.evaluator = Evaluator(task=task)
         
         ## Model
         self.model = model.to(device)
         self.task = task
         self.optimizer = optimizer
-        self.evaluator = evaluator
         self.scheduler = scheduler
 
         self.callbacks = callbacks or []
@@ -44,6 +47,14 @@ class Trainer:
         self.history = History()
       
     def _train_epoch(self, epoch : int):
+        """_summary_
+
+        Args:
+            epoch (int): _description_
+
+        Raises:
+            ValueError: _description_
+        """
         
         ## Set the model to training mode
         self.model.train()
@@ -118,9 +129,42 @@ class Trainer:
                 epoch=self.current_epoch,
                 metrics=results
             )
-            
+        
+    def _validate(self, epoch : int):
+        """_summary_
+
+        Args:
+            epoch (int): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        ## Call the callbacks at the beginning of the validation phase
+        for callback in self.callbacks:
+            callback.on_validation_begin(self)
+
+        
+        results = self.evaluator.evaluate(
+            self.model,
+            self.val_loader
+        )
+
+        results = {
+            f"val_{key}": value
+            for key, value in results.items()
+        }
+
+        for callback in self.callbacks:
+            callback.on_validation_end(self, results)
+
+        return results
     
     def fit(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
 
         ## Process Callbacks at the beginning of training
         for callback in self.callbacks:
@@ -141,7 +185,7 @@ class Trainer:
             self._train_epoch(epoch=self.current_epoch)
 
             ## Validation
-            val_metrics = self.evaluator.evaluate()
+            val_metrics = self._validate(epoch=self.current_epoch)
 
             ## Update the learning rate scheduler if it is provided
             if self.scheduler is not None:
@@ -154,7 +198,41 @@ class Trainer:
             callback.on_train_end(self)
 
         return self.history
-            
+    
+    def test(self):
+        """Method to test the model on the test dataloader
+
+        Returns:
+            dict: _description_
+        """
+        ## Call the callbacks at the beginning of the test phase
+        for callback in self.callbacks:
+            callback.on_test_begin(self)
+
+        results = self.evaluator.evaluate(
+            self.model,
+            self.test_loader
+        )
+
+        results = {
+            f"test_{key}": value
+            for key, value in results.items()
+        }
+
+        for callback in self.callbacks:
+            callback.on_test_end(self, results)
+
+        return results
+    
+    
+    
+    def get_history(self):
+        """Method to get the training history
+
+        Returns:
+            History: The training history object.
+        """
+        return self.history
             
         
         
