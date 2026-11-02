@@ -60,3 +60,12 @@ class ProgressCallback(BaseCallback):
 
         if self.epoch_bar is not None:
             self.epoch_bar.close()
+    
+    def on_test_end(self, trainer : Trainer, metrics : dict):
+        self.epoch_bar.set_postfix(
+            test_loss=f"{metrics['test_loss']:.4f}",
+            test_acc=f"{metrics.get('test_accuracy', 0):.4f}",
+        )
+
+    def on_test_begin(self, trainer : Trainer):
+        self.epoch_bar.set_description("Testing")
