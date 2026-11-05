@@ -1,5 +1,5 @@
 import argparse
-from .core.utils import Parser, setup_environment
+from core.parser import Parser
 from .scripts import train, evaluate
 
 
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     configs = Parser.parse(config_file_path, config_type)
 
     ## Environment setup
-    environment = setup_environment(configs)
+    environment = Parser._setup_environment(configs)
 
 
     ## Launch the specified task
