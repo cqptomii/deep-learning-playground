@@ -63,20 +63,6 @@ def get_model(model_config : dict) -> nn.Module:
         
     else:
         raise ValueError(f"Unknown loading type '{loading_type}'. Supported types: 'torchvision', 'custom'.")
-    
-    
-    if name not in MODEL_REGISTRY:
-        available = ", ".join(MODEL_REGISTRY.keys())
-        raise ValueError(
-            f"Unknown model '{name}'. Available models: {available}"
-        )
-
-    model = MODEL_REGISTRY[name](**kwargs)
-
-    if not isinstance(model, nn.Module):
-        raise TypeError(
-            f"Model factory '{name}' must return nn.Module"
-        )
 
     return model
 

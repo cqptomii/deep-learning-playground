@@ -39,6 +39,7 @@ class Parser:
     ### Parse method
     ###
     
+    @staticmethod
     def _setup_environment(self, config : dict):
         """Method to ensure that the configuration file contain all parameters needed
     
@@ -56,50 +57,70 @@ class Parser:
         if not isinstance(config["model"], dict):
             raise ValueError("'model' must be a dictionary.")
             
+        ## Ensure that the 'model' section contains the required parameters
+        model = config["model"]
+        if "model_name" not in model:
+            raise ValueError("Missing 'model_name' in 'model' section.")
+        if "use_pretrained" not in model:
+            model["use_pretrained"] = False  ## Default value
+        else:
+            if model["use_pretrained"] not in [True, False]:
+                raise ValueError("'use_pretrained' must be a boolean value.")
+            
+            ## Check that the weights section is present
+            if "weights" not in model:
+                raise ValueError("Missing 'weights' in 'model' section.")
+            if not isinstance(model["weights"], dict):
+                raise ValueError("'weights' must be a dictionary with this structure: {name: str, weight_path: str}" )
+            
+        if "type" not in model:
+            raise ValueError("Missing 'type' in 'model' section.")
+            
+            
         ## Check if the 'dataset' section is present
         if "dataset" not in config:
             raise ValueError("Missing 'dataset' section.")
         if not isinstance(config["dataset"], dict):
             raise ValueError("'dataset' must be a dictionary.")
-            
+        
+        ## Ensure that the 'dataset' section contains the required parameters
+        dataset = config["dataset"]
+        if "name" not in dataset:
+            raise ValueError("Missing 'name' in 'dataset' section.")
+        if "data_path" not in dataset:
+            raise ValueError("Missing 'data_path' in 'dataset' section.")
+         
         ## Check if the 'task' section is present
         if "task" not in config:
             raise ValueError("Missing 'task' section.")
         if not isinstance(config["task"], dict):
             raise ValueError("'task' must be a dictionary.")
-            
+        
+        ## Ensure that the 'task' section contains the required parameters
+        task = config["task"]
+        if "name" not in task:
+            raise ValueError("Missing 'name' in 'task' section.")
+        if "loss_function" not in task:
+            raise ValueError("Missing 'loss_function' in 'task' section.")
+        if "train_metrics" not in task:
+            raise ValueError("Missing 'train_metrics' in 'task' section.")
+        if "validation_metrics" not in task:
+            raise ValueError("Missing 'validation_metrics' in 'task' section.")    
+           
             
         ##
         ## SETUP ENVIRONMENT variables with default values if not present in the config
         ##
-        BATCH_SIZE = config.get("batch_size", 32)
-        EPOCHS = config.get("epochs", 20)
-        DEVICE = config.get("device", "cpu") ## By default use CPU        
-        OPTIMIZER = config.get("optimizer", {"name": "adam", "lr": 0.001})
-        LOGGING = config.get("logging_dir", "path/to/logs")
-        COMPUTE_VISUALIZATIONS = config.get("compute_visualizations", False)
-        CALLBACKS = config.get("callbacks", {"early_stopping": {"monitor": "val_loss"}})
-        
+        config["batch_size"] = config.get("batch_size", 32)
+        config["epochs"] = config.get("epochs", 20)
+        config["device"] = config.get("device", "cpu") ## By default use CPU        
+        config["optimizer"] = config.get("optimizer", {"name": "adam", "lr": 0.001})
+        config["output_dir"] = config.get("output_dir", "./outputs/")
+        config["compute_visualizations"] = config.get("compute_visualizations", False)
+        config["callbacks"] = config.get("callbacks", {"early_stopping": {"monitor": "val_loss"}})
+        config["scheduler"] = config.get("scheduler", {})
             
-        return {
-            "model" : config["model"],
-            "dataset" : config["dataset"],
-            "task" : config["task"],
-            "batch_size": BATCH_SIZE,
-            "epochs": EPOCHS,
-            "device": DEVICE,
-            "optimizer": OPTIMIZER,
-            "logging_dir": LOGGING,
-            "compute_visualizations": COMPUTE_VISUALIZATIONS,
-            "CALLBACKS": CALLBACKS
-        }
-        
-        
-        
-        
-        
-        
-        pass
+        return config
 
 
     @staticmethod
