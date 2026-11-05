@@ -9,10 +9,14 @@ class ClassificationTask(BaseTask):
     def __init__(self, 
                 train_metrics : List[BaseMetric], 
                 test_metrics : List[BaseMetric],
-                loss_fn = nn.CrossEntropyLoss()):
-        self.train_metrics = train_metrics
-        self.test_metrics = test_metrics
-        self.loss_fn = loss_fn
+                loss_fn = nn.CrossEntropyLoss()
+    ):
+        super().__init__(
+            train_metrics, 
+            test_metrics, 
+            loss_fn
+            )
+
         
     @property
     def train_metrics(self):
