@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
 
 class BaseVisualizer(ABC):
-    
     """
     Base interface class for all Visualizers
     """
-
+    
+    def __init__(self, stage : str = "train"):
+        self.stage = stage
+    
     @abstractmethod
     def update(self, trainer, metrics):
         """
