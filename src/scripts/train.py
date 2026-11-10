@@ -20,7 +20,6 @@ def train(environment : dict):
     BATCH_SIZE = environment.get("batch_size")
     EPOCHS = environment.get("epochs")
     DEVICE = environment.get("device")
-    COMPUTE_VISUALIZATIONS = environment.get("compute_visualizations")
     USE_GRAD_CLIP = environment.get("use_grad_clip", False)
     ## Create the optimizer
     optimizer = environment.get("optimizer")
@@ -52,9 +51,14 @@ def train(environment : dict):
     task = get_task(task, train_metrics, test_metrics, loss_fn)
     
     ## Create the dataset based on the configuration
-    dataset = environment.get("dataset")
-    train_dataloader, validation_dataloader, test_dataloader = get_dataset(dataset)
+    dataset_config = {
+        **environment["dataset"],
+        "batch_size": BATCH_SIZE,
+        "num_workers": environment.get("num_workers", 0),
+    }
     
+    ## Get the train, validation, and test dataloaders
+    train_dataloader, validation_dataloader, test_dataloader = get_dataset(dataset_config)
     
     ## Create the model based on the configuration
     model = environment.get("model")
