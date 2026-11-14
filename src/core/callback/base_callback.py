@@ -1,5 +1,10 @@
+from __future__ import annotations
+
 from abc import ABC
-from engine import Trainer
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..engine import Trainer
 
 class BaseCallback(ABC):
 

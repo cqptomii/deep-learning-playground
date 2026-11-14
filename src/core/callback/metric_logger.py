@@ -1,5 +1,11 @@
-from callback import BaseCallback
-from engine import Trainer
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from .base_callback import BaseCallback
+
+if TYPE_CHECKING:
+    from ..engine import Trainer
 
 class MetricLogger(BaseCallback):
 

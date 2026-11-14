@@ -1,8 +1,9 @@
 from typing import List
 
-from metrics import BaseMetric
-from tasks import BaseTask
 from torch import nn
+
+from ..metrics import BaseMetric
+from .base_task import BaseTask
 
 class ClassificationTask(BaseTask):
     

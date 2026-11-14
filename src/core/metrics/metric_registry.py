@@ -1,4 +1,4 @@
-from metrics import BaseMetric
+from .base_metric import BaseMetric
 
 def MetricRegistry():
     """

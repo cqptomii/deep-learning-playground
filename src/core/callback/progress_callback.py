@@ -1,7 +1,13 @@
+from __future__ import annotations
 
-from callback import BaseCallback
-from engine import Trainer
+from typing import TYPE_CHECKING
+
 from tqdm.auto import tqdm
+
+from .base_callback import BaseCallback
+
+if TYPE_CHECKING:
+    from ..engine import Trainer
 
 
 class ProgressCallback(BaseCallback):

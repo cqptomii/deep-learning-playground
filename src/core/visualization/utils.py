@@ -1,5 +1,7 @@
-from core.visualization import BaseVisualizer, TrainingCurveVisualizer
 from typing import List
+
+from .base_visualizer import BaseVisualizer
+from .training_curve_visualizer import TrainingCurveVisualizer
 
 def create_default_visualizers() -> List[BaseVisualizer]:
     """

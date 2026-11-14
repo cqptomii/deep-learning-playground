@@ -1,11 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Callable, Dict
+
 from .base_visualizer import BaseVisualizer
-from .training_curve_visualizer import TrainingCurveVisualizer
 from .confusion_matrix_visualizer import ConfusionMatrixVisualizer
 from .f1_score_visualizer import F1ScoreVisualizer
+from .training_curve_visualizer import TrainingCurveVisualizer
 from .utils import create_default_visualizers
-from core.tasks import BaseTask
 
-from typing import Dict, Callable
+if TYPE_CHECKING:
+    from ..tasks import BaseTask
 
 VISUALIZERS_REGISTRY : Dict[str, Callable] = {
     "TrainingCurveVisualizer": TrainingCurveVisualizer,

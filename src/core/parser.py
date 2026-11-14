@@ -1,4 +1,3 @@
-from networkx import config
 import yaml, json
 
 class Parser:

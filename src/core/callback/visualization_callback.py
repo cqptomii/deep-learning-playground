@@ -1,6 +1,7 @@
-from .base_callback import BaseCallback
-from visualization import BaseVisualizer
 from typing import List
+
+from ..visualization import BaseVisualizer
+from .base_callback import BaseCallback
 
 class VisualizationCallback(BaseCallback):
 

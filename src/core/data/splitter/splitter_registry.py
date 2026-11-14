@@ -1,4 +1,7 @@
-from splitter import RandomSplitter, StratifiedSplitter, BaseSplitter, StratifiedKFoldSplitter
+from .base_splitter import BaseSplitter
+from .random_splitter import RandomSplitter
+from .stratified_kfold_splitter import StratifiedKFoldSplitter
+from .stratified_splitter import StratifiedSplitter
 
 class SplitterRegistry:
     """Registry class to manage different data splitting strategies."""

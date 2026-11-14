@@ -1,7 +1,7 @@
 from torchvision.datasets import ImageFolder
 
-from splitter import SplitterRegistry, BaseSplitter
-from datamodule import DataModule
+from ..splitter import BaseSplitter, SplitterRegistry
+from .datamodule import DataModule
 
 class ImageDataModule(DataModule):
 

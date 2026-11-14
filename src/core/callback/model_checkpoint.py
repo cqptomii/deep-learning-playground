@@ -1,4 +1,4 @@
-from callback import BaseCallback
+from .base_callback import BaseCallback
 
 
 class ModelCheckpoint(BaseCallback):

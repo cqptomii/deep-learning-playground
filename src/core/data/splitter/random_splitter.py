@@ -1,5 +1,5 @@
 from torch.utils.data import random_split
-from splitter import  BaseSplitter
+from .base_splitter import BaseSplitter
 
 class RandomSplitter(BaseSplitter):
     

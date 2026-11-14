@@ -1,6 +1,7 @@
-from tasks import BaseTask
-from engine import Evaluator, History
-from callback import BaseCallback
+from ..callback import BaseCallback
+from ..tasks import BaseTask
+from .evaluator import Evaluator
+from .history import History
 
 import torch
 from typing import List

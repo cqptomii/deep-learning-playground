@@ -1,4 +1,4 @@
-from base_splitter import BaseSplitter
+from .base_splitter import BaseSplitter
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Subset
 

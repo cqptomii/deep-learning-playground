@@ -1,6 +1,6 @@
 import argparse
 from core.parser import Parser
-from .scripts import train, evaluate
+from scripts import train, evaluate
 
 
 

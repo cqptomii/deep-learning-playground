@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import List
-from metrics import BaseMetric
 from torch import nn
-from callback import get_callback
-from visualization import BaseVisualizer
+
+from ..callback import get_callback
+from ..metrics import BaseMetric
+from ..visualization import BaseVisualizer
 
 class BaseTask(ABC):
 

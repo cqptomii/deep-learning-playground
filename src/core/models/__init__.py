@@ -1,8 +1,8 @@
-from .registry import registry
+from torch import nn
+
+from .builder import build
 from .model_zoo import ModelZoo
 from .registry import MODEL_REGISTRY
-from .builder import build
-from torch import nn
 
 
 def get_model(model_config : dict) -> nn.Module:
@@ -69,6 +69,7 @@ def get_model(model_config : dict) -> nn.Module:
 
 __version__ = "1.0.0"
 __all__ = [
-    "registry",
+    "MODEL_REGISTRY",
     "ModelZoo",
+    "get_model",
 ]

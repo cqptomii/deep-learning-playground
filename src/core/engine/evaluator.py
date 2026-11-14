@@ -1,4 +1,4 @@
-from tasks import BaseTask
+from ..tasks import BaseTask
 
 from typing import List
 
