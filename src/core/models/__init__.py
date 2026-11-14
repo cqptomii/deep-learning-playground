@@ -24,6 +24,9 @@ def get_model(model_config : dict) -> nn.Module:
             use_pretrained=use_pretrained,
             weights=weight_name
         )
+        num_classes = model_config.get("num_classes")
+        if num_classes is not None and hasattr(model, "fc"):
+            model.fc = nn.Linear(model.fc.in_features, num_classes)
     
     elif loading_type == "custom":
         

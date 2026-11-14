@@ -1,0 +1,64 @@
+###
+### REQUIRED PARAMETERS
+###
+
+model:
+  use_pretrained: false
+  weights:
+    name: "IMAGENET1K_V1"
+    weight_path: "weights"
+  num_classes: 1000
+  name: "resnet18"
+  type: "torchvision" ## Options: "torchvision", "custom"
+  config_path: "configs/models/resnet18.yaml" ## Note: Not required (it's only for loading models from yaml file)
+
+dataset:
+  name: "trashnet"
+  source: "external"
+  data_path: "data/trashnet"
+  type: "image"
+  splitting:
+    strategy: "random"
+    ratio: [0.70, 0.15, 0.15]
+task:
+  type: "classification"
+  loss_fn: "cross_entropy"
+  metrics:
+    train: ["accuracy"]
+    test: ["accuracy", "confusion_matrix"]
+
+
+##
+## Optional parameters
+##
+
+output_dir: "./outputs"
+batch_size: 32
+epochs: 20
+device: "cuda"
+use_grad_clip: false
+
+data_augmentation:
+  train: []
+  validation: []
+
+scheduler: 
+  name: "step"
+  step_size: 10
+  gamma: 0.1
+
+optimizer:
+  name: "adam"
+  lr: 0.001
+
+visualizers:
+  "training_curve":
+      stage: "train"
+      metrics: ["weighted_accuracy"]
+
+
+
+callbacks:
+  early_stopping:
+    monitor: "val_loss"
+    patience: 5

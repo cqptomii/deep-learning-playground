@@ -12,12 +12,12 @@ if TYPE_CHECKING:
     from ..tasks import BaseTask
 
 VISUALIZERS_REGISTRY : Dict[str, Callable] = {
-    "TrainingCurveVisualizer": TrainingCurveVisualizer,
-    "ConfusionMatrixVisualizer": ConfusionMatrixVisualizer,
-    "F1ScoreVisualizer": F1ScoreVisualizer
+    "training_curve": TrainingCurveVisualizer,
+    "confusion_matrix": ConfusionMatrixVisualizer,
+    "f1_score": F1ScoreVisualizer
 }
 
-def process_visualizers(visualizers_config: list, task : BaseTask) -> list[BaseVisualizer]:
+def process_visualizers(visualizers_config: dict) -> list[BaseVisualizer]:
     """Method to create each visualizers provided by the user in config and default visualizers based on the metrics used in the task.
 
     Args:
@@ -41,15 +41,15 @@ def process_visualizers(visualizers_config: list, task : BaseTask) -> list[BaseV
     ## Process the visualizers provided by the user
     ##
     try:
-        for visualizer_config in visualizers_config.keys():
-            name = visualizer_config
-            config = visualizers_config.get(name, {})
+        for visualizer_name, visualizer_config in visualizers_config.items():
+
+            visualizer_name = visualizer_name.lower()
+
+            if visualizer_name not in VISUALIZERS_REGISTRY:
+                raise ValueError(f"Visualizer '{visualizer_name}' is not registered. Available visualizers: {list(VISUALIZERS_REGISTRY.keys())}")
             
-            if name not in VISUALIZERS_REGISTRY:
-                raise ValueError(f"Visualizer '{name}' is not registered. Available visualizers: {list(VISUALIZERS_REGISTRY.keys())}")
-            
-            visualizer_class = VISUALIZERS_REGISTRY[name]
-            visualizer_instance = visualizer_class(task=task, **config)
+            visualizer_class = VISUALIZERS_REGISTRY[visualizer_name]
+            visualizer_instance = visualizer_class(**visualizer_config)
             visualizers.append(visualizer_instance)
     except Exception as e:
         raise ValueError(f"Error processing visualizers configuration: {e}")

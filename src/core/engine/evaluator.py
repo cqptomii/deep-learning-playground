@@ -21,42 +21,42 @@ class Evaluator:
         Returns:
             dict: _description_
         """
-        self.model.eval()
+        model.eval()
+
+        for metric in self.task.test_metrics:
+            metric.reset()
         
         total_loss = 0.0
         total_samples = 0
         
         for batch in dataloader:
-            inputs, targets = batch
-            
             ## Move the inputs and targets to the device
-            inputs, targets = self.task.move_to_device(inputs, targets, self.device)
-        
+            batch = self.task.to_device(batch, self.device)
+
             ## Forward pass
-            outputs = model(inputs)
+            outputs = self.task.forward(model, batch)
             
             ## Compute the loss
-            loss = self.task.loss_fn(outputs, targets)
+            loss = self.task.compute_loss(outputs, batch)
+            batch_size = self.task.get_batch_size(batch)
             
             ## Update the total loss and total samples
-            total_loss += loss.item() * inputs.size(0)
-            total_samples += inputs.size(0)
+            total_loss += loss.item() * batch_size
+            total_samples += batch_size
             
             ## Update the metrics for the evaluation
             for metric in self.task.test_metrics:
-                metric.update(outputs, targets)
+                metric.update(outputs, batch)
 
         if total_samples == 0:
             raise ValueError("No samples were processed.")
 
         results = {
-            "test_loss" : total_loss / total_samples,
+            "loss": total_loss / total_samples,
         }
         
         ## Compute the metrics for the evaluation
         for metric in self.task.test_metrics:
-            metric.update(outputs, targets)
-            results[f"test_{metric.metric_name}"] = metric.compute()
+            results[metric.metric_name] = metric.compute()
         
-        ## Return the validation metrics
         return results

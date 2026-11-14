@@ -4,7 +4,7 @@ class ModelZoo:
     """A class that provides access to pre-trained models from torchvision."""
 
     @staticmethod
-    def get_model(model_name: str, pretrained: bool = True, weights : str = None, **kwargs):
+    def get_model(model_name: str, use_pretrained: bool = True, weights : str = None, **kwargs):
         """
         Load a torchvision model dynamically.
 
@@ -30,7 +30,7 @@ class ModelZoo:
         ## Determine which weights to load
         selected_weights = None
 
-        if pretrained:
+        if use_pretrained:
             if weights is not None:
                 try:
                     selected_weights = weights_enum[weights]

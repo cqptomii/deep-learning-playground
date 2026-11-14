@@ -19,19 +19,21 @@ def create_default_visualizers() -> List[BaseVisualizer]:
     ##
             
     training_curve_loss = TrainingCurveVisualizer(
-        metrics_to_plot=[
+        metrics=[
             "train_loss",
             "val_loss"
         ],
+        stage="train",
         plot_title="Training and Validation Loss",
         plot_xlabel="Epoch",
         plot_ylabel="Loss"
     )
     training_curve_accuracy = TrainingCurveVisualizer(
-        metrics_to_plot=[
+        metrics=[
             "train_accuracy",
             "val_accuracy"
         ],
+        stage="train",
         plot_title="Training and Validation Accuracy",
         plot_xlabel="Epoch",
         plot_ylabel="Accuracy"

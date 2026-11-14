@@ -61,19 +61,21 @@ class Trainer:
         
         ## Set the model to training mode
         self.model.train()
+
+        for metric in self.task.train_metrics:
+            metric.reset()
         
         total_loss = 0.0
         total_samples = 0
         
-        
         ## Call the callbacks at the beginning of the training epoch
-        for callback in self.callbacks:
-            callback.on_train_batch_begin(
-                trainer=self, 
-                batch_idx=epoch
-            )
+        for batch_idx, batch in enumerate(self.train_loader):
+            for callback in self.callbacks:
+                callback.on_train_batch_begin(
+                    trainer=self,
+                    batch_idx=batch_idx
+                )
 
-        for batch in enumerate(self.train_loader):
             ## Move the batch data to the specified device
             batch = self.task.to_device(batch, self.device)
             
@@ -88,7 +90,7 @@ class Trainer:
             ## Backward pass
             loss.backward()
             
-            if self.grad_clip is not None:
+            if self.grad_clip not in [None, False]:
                 clip_grad_norm_(
                     self.model.parameters(),
                     self.grad_clip,
@@ -109,8 +111,8 @@ class Trainer:
             ## Call the callbacks at the end of each training batch
             for callback in self.callbacks:
                 callback.on_train_batch_end(
-                    trainer=self, 
-                    batch_idx=epoch
+                    trainer=self,
+                    batch_idx=batch_idx
                 )
             
         if total_samples == 0:
@@ -124,14 +126,7 @@ class Trainer:
         for metric in self.task.train_metrics:
             results[f"train_{metric.metric_name}"] = metric.compute()
 
-        
-        ## Call the callbacks at the end of the training epoch
-        for callback in self.callbacks:
-            callback.on_epoch_end(
-                trainer=self,
-                epoch=self.current_epoch,
-                metrics=results
-            )
+        return results
         
     def _validate(self, epoch : int):
         """Method to validate the model
@@ -185,10 +180,21 @@ class Trainer:
                 )
 
             ## Training
-            self._train_epoch(epoch=self.current_epoch)
+            train_metrics = self._train_epoch(epoch=self.current_epoch)
 
             ## Validation
             val_metrics = self._validate(epoch=self.current_epoch)
+            epoch_metrics = {**train_metrics, **val_metrics}
+
+            for callback in self.callbacks:
+                callback.on_epoch_end(
+                    trainer=self,
+                    epoch=self.current_epoch,
+                    metrics=epoch_metrics
+                )
+
+            if self.stop_training:
+                break
 
             ## Update the learning rate scheduler if it is provided
             if self.scheduler is not None:

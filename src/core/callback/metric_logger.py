@@ -12,7 +12,7 @@ class MetricLogger(BaseCallback):
     """
     Callback class for logging metrics during training, validation and testing phases.
     """
-    def on_epoch_end(self, trainer : Trainer, batch_idx : int, metrics : dict):
+    def on_epoch_end(self, trainer : Trainer, epoch : int, metrics : dict):
         """Method to save the epoch train metrics
 
         Args:
@@ -21,7 +21,7 @@ class MetricLogger(BaseCallback):
             metrics (dict): Dictionary of metrics
         """
         trainer.history.log_epoch(
-            epoch=batch_idx,
+            epoch=epoch,
             stage="train",
             metrics=metrics
         )

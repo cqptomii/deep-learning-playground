@@ -17,12 +17,14 @@ def get_callback(callback_name : str, **kwargs) -> BaseCallback:
         BaseCallback: An instance of the requested callback class.
     """
     callbacks = {
-        "EarlyStopping": EarlyStopping,
-        "MetricLogger": MetricLogger,
-        "ModelCheckpoint": ModelCheckpoint,
-        "ProgressCallback": ProgressCallback,
-        "VisualizationCallback": VisualizationCallback
+        "early_stopping": EarlyStopping,
+        "metric_logger": MetricLogger,
+        "model_checkpoint": ModelCheckpoint,
+        "progress_callback": ProgressCallback,
+        "visualization_callback": VisualizationCallback
     }
+    
+    callback_name = callback_name.lower()
 
     if callback_name not in callbacks:
         raise ValueError(f"Callback '{callback_name}' is not registered. Available callbacks: {list(callbacks.keys())}")

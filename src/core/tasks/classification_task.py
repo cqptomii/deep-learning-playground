@@ -18,15 +18,6 @@ class ClassificationTask(BaseTask):
             loss_fn
             )
 
-        
-    @property
-    def train_metrics(self):
-        return self.train_metrics
-
-    @property
-    def test_metrics(self):
-        return self.test_metrics
-
     def to_device(self, batch, device : str):
         """Method to move the batch data to the specified device
 

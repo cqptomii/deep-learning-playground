@@ -4,7 +4,7 @@ from torch.optim import SGD, Adam, AdamW, RMSprop, Adagrad, LBFGS
 class OptimizerRegistry:
     
     @staticmethod
-    def get_optimizer(optimizer_strategy: str, model_parameters, **kwargs):
+    def get_optimizer(name: str, model_parameters, **kwargs):
         """Static method to get the optimizer given by the strategy
 
         Args:
@@ -18,17 +18,17 @@ class OptimizerRegistry:
         Returns:
             torch.optim.Optimizer: The initialized optimizer.
         """
-        if optimizer_strategy == "sgd":
+        if name == "sgd":
             return SGD(model_parameters, **kwargs)
-        elif optimizer_strategy == "adam":
+        elif name == "adam":
             return Adam(model_parameters, **kwargs)
-        elif optimizer_strategy == "adamw":
+        elif name == "adamw":
             return AdamW(model_parameters, **kwargs)
-        elif optimizer_strategy == "rmsprop":
+        elif name == "rmsprop":
             return RMSprop(model_parameters, **kwargs)
-        elif optimizer_strategy == "adagrad":
+        elif name == "adagrad":
             return Adagrad(model_parameters, **kwargs)
-        elif optimizer_strategy == "lbfgs":
+        elif name == "lbfgs":
             return LBFGS(model_parameters, **kwargs)
         else:
-            raise ValueError(f"Unknown optimizer strategy: {optimizer_strategy}")
+            raise ValueError(f"Unknown optimizer strategy: {name}")

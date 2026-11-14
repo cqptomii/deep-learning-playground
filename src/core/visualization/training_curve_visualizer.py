@@ -7,16 +7,20 @@ class TrainingCurveVisualizer(BaseVisualizer):
 
     def __init__(
         self,
-        metrics_to_plot: Optional[List[str]] = None,
+        metrics: Optional[List[str]] = None,
+        stage: str = "train",
         plot_title: str = "Training Curves",
         plot_xlabel: str = "Epoch",
-        plot_ylabel: str = "Value"
+        plot_ylabel: str = "Value",
     ):
+        super().__init__(stage=stage)
+
         ## Metric history to store the metrics over epochs
         self.metrics_history = []
 
         ## Hyperparameters for the plot
-        self.metrics_to_plot = metrics_to_plot or [
+        selected_metrics = metrics
+        self.metrics = selected_metrics or [
             'train_loss',
             'val_loss',
             'train_accuracy',
@@ -52,12 +56,12 @@ class TrainingCurveVisualizer(BaseVisualizer):
 
         ## Extract metrics for plotting from the history
         metrics_to_plot = {
-            metric: [] for metric in self.metrics_to_plot
+            metric: [] for metric in self.metrics
         }
 
         ## Populate the metrics_to_plot dictionary with values from metrics_history
         for metrics in self.metrics_history:
-            for metric in self.metrics_to_plot:
+            for metric in metrics_to_plot:
                 metrics_to_plot[metric].append(metrics.get(metric, None))
 
         ## Plot the training curves
@@ -83,9 +87,10 @@ class TrainingCurveVisualizer(BaseVisualizer):
 
         ## Show the training curves plot
         self._plot.tight_layout()
-        plt.show(block=False)
-        self._plot.canvas.draw_idle()
-        self._plot.canvas.flush_events()
+        self._plot.canvas.draw()
+        if plt.get_backend().lower() != "agg":
+            plt.show(block=False)
+            self._plot.canvas.flush_events()
 
     def save(self, path: str):
 

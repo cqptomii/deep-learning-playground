@@ -39,7 +39,7 @@ class Parser:
     ###
     
     @staticmethod
-    def _setup_environment(self, config : dict):
+    def _setup_environment( config : dict):
         """Method to ensure that the configuration file contain all parameters needed
     
         Args:
@@ -58,8 +58,8 @@ class Parser:
             
         ## Ensure that the 'model' section contains the required parameters
         model = config["model"]
-        if "model_name" not in model:
-            raise ValueError("Missing 'model_name' in 'model' section.")
+        if "name" not in model:
+            raise ValueError("Missing 'name' in 'model' section.")
         if "use_pretrained" not in model:
             model["use_pretrained"] = False  ## Default value
         else:
@@ -97,14 +97,17 @@ class Parser:
         
         ## Ensure that the 'task' section contains the required parameters
         task = config["task"]
-        if "name" not in task:
-            raise ValueError("Missing 'name' in 'task' section.")
-        if "loss_function" not in task:
-            raise ValueError("Missing 'loss_function' in 'task' section.")
-        if "train_metrics" not in task:
-            raise ValueError("Missing 'train_metrics' in 'task' section.")
-        if "validation_metrics" not in task:
-            raise ValueError("Missing 'validation_metrics' in 'task' section.")    
+        if "type" not in task:
+            raise ValueError("Missing 'type' in 'task' section.")
+        if "loss_fn" not in task:
+            raise ValueError("Missing 'loss_fn' in 'task' section.")
+        if "metrics" not in task:
+            raise ValueError("Missing 'metrics' in 'task' section.")
+
+        if "train" not in task.get("metrics", {}):
+            raise ValueError("Missing 'train' in 'task.metrics'.")
+        if "test" not in task.get("metrics", {}):
+            raise ValueError("Missing 'test' in 'task.metrics'.")    
            
             
         ##

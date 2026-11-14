@@ -6,7 +6,7 @@ class SchedulerRegistry:
     A registry for learning rate schedulers.
     """
     @staticmethod
-    def get_scheduler(scheduler_strategy: str, optimizer, **kwargs):
+    def get_scheduler(name: str, optimizer, **kwargs):
         """Static method to get the scheduler given by the strategy
 
         Args:
@@ -20,17 +20,17 @@ class SchedulerRegistry:
         Returns:
             torch.optim.lr_scheduler.LRScheduler: The initialized scheduler.
         """
-        if scheduler_strategy == "step":
+        if name == "step":
             return StepLR(optimizer, **kwargs)
-        elif scheduler_strategy == "multistep":
+        elif name == "multistep":
             return MultiStepLR(optimizer, **kwargs)
-        elif scheduler_strategy == "exponential":
+        elif name == "exponential":
             return ExponentialLR(optimizer, **kwargs)
-        elif scheduler_strategy == "cosine":
+        elif name == "cosine":
             return CosineAnnealingLR(optimizer, **kwargs)
-        elif scheduler_strategy == "reduce_on_plateau":
+        elif name == "reduce_on_plateau":
             return ReduceLROnPlateau(optimizer, **kwargs)
-        elif scheduler_strategy == "one_cycle":
+        elif name == "one_cycle":
             return OneCycleLR(optimizer, **kwargs)
         else:
-            raise ValueError(f"Unknown scheduler strategy: {scheduler_strategy}")
+            raise ValueError(f"Unknown scheduler strategy: {name}")

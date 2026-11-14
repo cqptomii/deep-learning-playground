@@ -1,3 +1,4 @@
+import os
 from typing import List
 
 from ..visualization import BaseVisualizer
@@ -50,7 +51,7 @@ class VisualizationCallback(BaseCallback):
         for visualizer in self.visualizers:
             if visualizer.stage in ["train", "validation"]:
                 visualizer.render()
-                visualizer.save(f"{self.save_path}/{visualizer.__class__.__name__}.png")
+                visualizer.save(self._output_path(visualizer))
                 visualizer.clear()  
     def on_test_end(self, trainer, metrics):
         """Method to render and save visualization related to stage "test"
@@ -64,5 +65,11 @@ class VisualizationCallback(BaseCallback):
             if visualizer.stage == "test":
                 visualizer.update(trainer, metrics)
                 visualizer.render()
-                visualizer.save(f"{self.save_path}/{visualizer.__class__.__name__}.png")
+                visualizer.save(self._output_path(visualizer))
                 visualizer.clear()
+
+    def _output_path(self, visualizer) -> str:
+        os.makedirs(self.save_path, exist_ok=True)
+        title = getattr(visualizer, "plot_title", visualizer.__class__.__name__)
+        filename = "".join(character if character.isalnum() else "_" for character in title).strip("_")
+        return os.path.join(self.save_path, f"{filename}.png")

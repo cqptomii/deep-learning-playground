@@ -13,19 +13,17 @@ class BaseTask(ABC):
                 test_metrics : List[BaseMetric],
                 loss_fn = nn.CrossEntropyLoss()
     ):
-            self.train_metrics = train_metrics
-            self.test_metrics = test_metrics
+            self._train_metrics = train_metrics
+            self._test_metrics = test_metrics
             self.loss_fn = loss_fn
             
     @property
-    @abstractmethod
     def train_metrics(self):
-        pass
-    
+        return self._train_metrics
+
     @property
-    @abstractmethod
     def test_metrics(self):
-        pass
+        return self._test_metrics
 
     @abstractmethod
     def to_device(self, batch, device):
@@ -44,7 +42,7 @@ class BaseTask(ABC):
         pass
     
     
-    def get_callbacks(self, callbacks : list[dict], visualizers : List[BaseVisualizer] = [] ) -> list:
+    def get_callbacks(self, callbacks : list[dict], visualizers : List[BaseVisualizer] = [], save_path : str = "visualizations") -> list:
         """Method to create and return the list of callbacks specified by the user with logging callbacks added to the list.
 
         Args:
@@ -53,19 +51,18 @@ class BaseTask(ABC):
         callback_instances = []
         
         ## Add each callback specified into the list
-        for callback in callbacks.keys():
-            callback_config = callbacks.get("callback", {})
+        for callback_name, callback_config in callbacks.items():
             
-            callback_instance = get_callback(callback, **callback_config)
+            callback_instance = get_callback(callback_name, **callback_config)
             callback_instances.append(callback_instance)
             
         ## Create the metric Logger callback
-        metric_logger = get_callback("MetricLogger")
+        metric_logger = get_callback("metric_logger")
         ## Create the visualization callbacks correlated with the metrics used
         vis_callback = get_callback(
-            "VisualizationCallback",
+            "visualization_callback",
             visualizers=visualizers,
-            save_path="visualizations",
+            save_path=save_path,
         )
         
         callback_instances.append(metric_logger)

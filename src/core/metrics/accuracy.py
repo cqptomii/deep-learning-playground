@@ -39,7 +39,7 @@ class AccuracyMetric(BaseMetric):
         targets = batch[1].detach()
         
         ## Calculate the number of correct predictions
-        self.correct = (predictions == targets).sum().item()
+        self.correct += (predictions == targets).sum().item()
         self.total += targets.numel()
     
     def compute(self):
