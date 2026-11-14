@@ -1,6 +1,7 @@
 from torchvision.datasets import ImageFolder
 
 from ..splitter import BaseSplitter, SplitterRegistry
+from ..vision import ApplyTransform
 from .datamodule import DataModule
 
 class ImageDataModule(DataModule):
@@ -13,7 +14,7 @@ class ImageDataModule(DataModule):
         train_transform=None,
         eval_transform=None,
         split_strategy='random',
-        split_ratio=(0.8, 0.15, 0.15)
+        split_ratio=(0.7, 0.15, 0.15)
     ):
         """ DataModule initializer method
 
@@ -44,8 +45,18 @@ class ImageDataModule(DataModule):
         ## Load the dataset
         dataset = ImageFolder(
             root=self.root,
-            transform=self.train_transform
+            transform=None
         )
         
         ## Split the dataset
         self.folds = self.splitter.split(dataset, self.split_ratio)
+        
+        ## Apply the transforms to the datasets in each fold
+        self.folds = [
+            (
+                ApplyTransform(train_ds, self.train_transform),
+                ApplyTransform(val_ds, self.eval_transform),
+                ApplyTransform(test_ds, self.eval_transform),
+            )
+            for train_ds, val_ds, test_ds in self.folds
+        ]

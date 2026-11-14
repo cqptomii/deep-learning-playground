@@ -1,3 +1,4 @@
+import torch
 from torchvision.transforms import v2
 
 class TransformsWrapper:
@@ -87,6 +88,24 @@ class TransformsWrapper:
         return v2.Compose(
             self.val_transforms
         )
+
+
+def default_image_transforms():
+    return [
+        v2.Resize((224, 224)),
+        v2.ToImage(),
+        v2.ToDtype(torch.float32, scale=True),
+        v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ]
+
+
+def build_split_transforms(train_ops=None, val_ops=None):
+    """Build train and eval callables. Empty lists fall back to the ResNet default."""
+    wrapper = TransformsWrapper(
+        train_transforms=list(train_ops) if train_ops else default_image_transforms(),
+        val_transforms=list(val_ops) if val_ops else default_image_transforms(),
+    )
+    return wrapper.get_train_transforms(), wrapper.get_val_transforms()
     
          
         

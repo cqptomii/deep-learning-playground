@@ -24,5 +24,11 @@ class RandomSplitter(BaseSplitter):
             dataset, [train_length, val_length, test_length]
         )
 
-        return train_dataset, val_dataset, test_dataset
+        return [
+            (
+                train_dataset, 
+                val_dataset, 
+                test_dataset
+            )
+        ]
         

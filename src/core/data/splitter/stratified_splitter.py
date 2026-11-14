@@ -28,8 +28,10 @@ class StratifiedSplitter(BaseSplitter):
             random_state=self.random_seed
         )
         
-        return {
-            "train_idx" : Subset(dataset, train_idx.tolist()),
-            "val_idx" : Subset(dataset, val_idx.tolist()),
-            "test_idx" : Subset(dataset, test_idx.tolist())
-        }
+        return [
+            (
+                Subset(dataset, train_idx.tolist()),
+                Subset(dataset, val_idx.tolist()),
+                Subset(dataset, test_idx.tolist())
+            )
+        ]
