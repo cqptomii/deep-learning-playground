@@ -1,6 +1,6 @@
 from torch import nn
-from .encoder import BaseEncoder
-from .decoder import BaseDecoder
+from ...core.encoder import BaseEncoder
+from ...core.decoder import BaseDecoder
 
 class UNet(nn.Module):
 
