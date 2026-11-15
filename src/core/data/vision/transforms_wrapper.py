@@ -15,7 +15,9 @@ class TransformsWrapper:
         """
         self.train_transforms : list  = train_transforms
         self.val_transforms : list = val_transforms
-    
+        
+        if val_transforms is None:
+            self.val_transforms = default_image_transforms()
     
     def __add_to_transforms(self, transform, transforms_list : list, index : int = None):
         """Method to add a specific transform into a specific list of transforms (train or validation).

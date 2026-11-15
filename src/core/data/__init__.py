@@ -1,4 +1,5 @@
 from .dataset_zoo import DatasetZoo
+from .vision import *
 from .datamodule import get_data_module
 
 def get_dataset(dataset_config: dict):
@@ -9,28 +10,35 @@ def get_dataset(dataset_config: dict):
     Args:
         dataset_config (dict): Configuration for the dataset to be loaded.
     """
-    dataset_name = dataset_config.get("name")
+    dataset_name = dataset_config.pop("name")
     if dataset_name is None:
         raise ValueError("dataset_name must be provided in the dataset configuration.")
 
-    dataset_path = dataset_config.get("data_path", None)
+    dataset_path = dataset_config.pop("data_path", None)
     if dataset_path is None:
         raise ValueError("data_path must be provided in the dataset configuration.")
 
-    dataset_type = dataset_config.get("type", None)
+    dataset_type = dataset_config.pop("type", None)
     if dataset_type is None:
         raise ValueError("type must be provided in the dataset configuration.")
 
     if dataset_type.startswith("torch_"):
+        batch_size = dataset_config.pop("batch_size", 32)
+        num_workers = dataset_config.pop("num_workers", 0)
+        download = dataset_config.pop("download", True)
+        train_transform = dataset_config.pop("train_transform", None)
+        eval_transform = dataset_config.pop("eval_transform", None)
+        
         return DatasetZoo.get_dataloaders(
             dataset_name=dataset_name,
             library=dataset_type.replace("torch_", ""),
             root=dataset_path,
-            batch_size=dataset_config.get("batch_size", 32),
-            num_workers=dataset_config.get("num_workers", 0),
-            download=dataset_config.get("download", True),
-            train_transform=dataset_config.get("train_transform", None),
-            eval_transform=dataset_config.get("eval_transform", None),
+            batch_size=batch_size,
+            num_workers=num_workers,
+            download=download,
+            train_transform=train_transform,
+            eval_transform=eval_transform,
+            **dataset_config
         )
 
     if dataset_type == "image":
@@ -57,4 +65,6 @@ __version__ = "1.0.0"
 __all__ = [
     "DatasetZoo",
     "get_dataset",
+    "ApplyTransform",
+    "TransformsWrapper",
 ]
