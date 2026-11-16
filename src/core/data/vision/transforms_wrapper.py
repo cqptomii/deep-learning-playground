@@ -1,5 +1,6 @@
 import torch
 from torchvision.transforms import v2
+from .transform_registry import TransformRegistry
 
 class TransformsWrapper:
     """
@@ -66,9 +67,9 @@ class TransformsWrapper:
         """Method to set the train transforms
 
         Args:
-            transforms (list): List of transforms to be set for training data
+            transforms (list): List of transforms dicts to be set for training data
         """
-        self.train_transforms = transforms
+        self.train_transforms = TransformRegistry.get_transforms(transforms)
     def set_val_transforms(self, transforms : list):
         """Method to set the validation transforms
         

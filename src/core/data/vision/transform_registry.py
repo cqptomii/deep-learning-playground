@@ -44,19 +44,19 @@ class TransformRegistry:
         return transform_class(**(parameters or {}))
     
     @staticmethod
-    def get_transforms(self, transform_list : list) -> v2.Compose:
+    def get_transforms(transform_list : list) -> list:
         """Method which retrieve a transform compose based on a list of transform
 
         Args:
             transform_list (list): A list of transform names to be retrieved and composed.
 
         Returns:
-            v2.Compose: A composed transform function that applies the specified transforms in sequence.
+            list: A list of transform functions that applies the specified transforms in sequence.
         """
         transforms = []
         for transform_name in transform_list:
             transform = TransformRegistry.parse_transform(transform_name)
             transforms.append(transform())
         
-        return v2.Compose(transforms)
+        return transforms
         
