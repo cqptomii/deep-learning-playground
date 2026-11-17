@@ -2,7 +2,7 @@ from torch import nn
 
 from .builder import build
 from .model_zoo import ModelZoo
-from .registry import MODEL_REGISTRY
+from .model_registry import MODEL_REGISTRY
 
 
 def get_model(model_config : dict) -> nn.Module:
