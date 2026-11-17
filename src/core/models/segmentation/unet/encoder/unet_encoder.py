@@ -1,5 +1,5 @@
 from torch import nn
-from .base_encoder import BaseEncoder
+from ....core.encoder.base_encoder import BaseEncoder
 
 
 

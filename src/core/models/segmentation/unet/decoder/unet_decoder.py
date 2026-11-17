@@ -1,6 +1,6 @@
 from torch import nn
 from core.models.core.blocks.decoder import DecoderBlock
-from .base_decoder import BaseDecoder
+from ....core.decoder.base_decoder import BaseDecoder
 
 
 
