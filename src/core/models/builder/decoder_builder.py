@@ -1,7 +1,7 @@
-from .model_builder import ModelBuilder
+from .base_builder import BaseBuilder
 
 
-class EncoderBuilder(ModelBuilder):
+class DecoderBuilder(BaseBuilder):
     
     
     def build(self, config : dict):
