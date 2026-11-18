@@ -1,4 +1,12 @@
+from ..configs import (
+    EarlyStoppingConfig,
+    MetricLoggerConfig,
+    ModelCheckpointConfig,
+    ProgressCallbackConfig,
+    VisualizationCallbackConfig,
+)
 from .base_callback import BaseCallback
+from .callback_registry import CallbackRegistry
 from .early_stopping import EarlyStopping
 from .metric_logger import MetricLogger
 from .model_checkpoint import ModelCheckpoint
@@ -6,35 +14,30 @@ from .progress_callback import ProgressCallback
 from .visualization_callback import VisualizationCallback
 
 
-def get_callback(callback_name : str, **kwargs) -> BaseCallback:
-    """Function to get the callback class based on the callback name.
+def __init_callbacks():
+    """Initialize the callback registry with the available callbacks."""
+    CallbackRegistry.register("early_stopping", EarlyStopping, EarlyStoppingConfig)
+    CallbackRegistry.register("metric_logger", MetricLogger, MetricLoggerConfig)
+    CallbackRegistry.register(
+        "model_checkpoint", ModelCheckpoint, ModelCheckpointConfig
+    )
+    CallbackRegistry.register(
+        "progress_callback", ProgressCallback, ProgressCallbackConfig
+    )
+    CallbackRegistry.register(
+        "visualization_callback",
+        VisualizationCallback,
+        VisualizationCallbackConfig,
+    )
 
-    Args:
-        callback_name (str): The name of the callback to retrieve.
-        **kwargs: Additional keyword arguments to pass to the callback constructor.
 
-    Returns:
-        BaseCallback: An instance of the requested callback class.
-    """
-    callbacks = {
-        "early_stopping": EarlyStopping,
-        "metric_logger": MetricLogger,
-        "model_checkpoint": ModelCheckpoint,
-        "progress_callback": ProgressCallback,
-        "visualization_callback": VisualizationCallback
-    }
-    
-    callback_name = callback_name.lower()
-
-    if callback_name not in callbacks:
-        raise ValueError(f"Callback '{callback_name}' is not registered. Available callbacks: {list(callbacks.keys())}")
-
-    return callbacks[callback_name](**kwargs)
+__init_callbacks()
 
 __version__ = "1.0.0"
 
 __all__ = [
     "BaseCallback",
+    "CallbackRegistry",
     "EarlyStopping",
     "MetricLogger",
     "ModelCheckpoint",

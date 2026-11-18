@@ -1,5 +1,5 @@
-from .optimizer_registry import OptimizerRegistry
-from .scheduler_registry import SchedulerRegistry
+from .optimizer.optimizer_registry import OptimizerRegistry
+from .scheduler.scheduler_registry import SchedulerRegistry
 from .tasks import get_task
 from .models import get_model
 from .callback import get_callback
