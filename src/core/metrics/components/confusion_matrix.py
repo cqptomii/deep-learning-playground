@@ -1,18 +1,14 @@
+from ..base_metric import BaseMetric
+from . import ConfusionMatrix
 
-import torch
-
-from .base_metric import BaseMetric
-from .confusion_matrix import ConfusionMatrix
-
-
-class PixelAccuracyMetric(BaseMetric):
+class ConfusionMatrixMetric(BaseMetric):
 
     def __init__(self, ignore_index=None):
         self.confusion_matrix = ConfusionMatrix(ignore_index)
 
     @property
     def metric_name(self):
-        return "pixel_accuracy"
+        return "confusion_matrix"
 
     def reset(self):
         self.confusion_matrix.reset()
@@ -24,13 +20,6 @@ class PixelAccuracyMetric(BaseMetric):
         self.confusion_matrix.update(predictions, targets)
 
     def compute(self):
-
         matrix = self.confusion_matrix.compute()
 
-        if matrix is None:
-            return 0.0
-
-        correct = matrix.diag().sum()
-        total = matrix.sum()
-
-        return (correct.float() / total).item() if total > 0 else 0.0
+        return matrix.tolist() if matrix is not None else []

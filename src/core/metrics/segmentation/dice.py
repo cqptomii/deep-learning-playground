@@ -1,11 +1,11 @@
 
 import torch
 
-from .base_metric import BaseMetric
-from .confusion_matrix import ConfusionMatrix
+from ..base_metric import BaseMetric
+from ..components import ConfusionMatrix
 
 
-class IOUMetric(BaseMetric):
+class DiceMetric(BaseMetric):
 
     def __init__(
         self,
@@ -20,7 +20,7 @@ class IOUMetric(BaseMetric):
 
     @property
     def metric_name(self):
-        return "iou"
+        return "dice"
 
     def reset(self):
         self.confusion_matrix.reset()
@@ -44,24 +44,24 @@ class IOUMetric(BaseMetric):
         fp = matrix.sum(dim=0) - tp
         fn = matrix.sum(dim=1) - tp
 
-        union = tp + fp + fn
+        denominator = 2 * tp + fp + fn
 
-        valid = union > 0
+        valid = denominator > 0
 
-        iou = tp / union.clamp(min=1)
+        dice = (2 * tp) / denominator.clamp(min=1)
 
         if self.average == "none":
-            return iou
+            return dice
 
         if not valid.any():
             return torch.tensor(0.)
 
         if self.average == "macro":
-            return iou[valid].mean()
+            return dice[valid].mean()
 
         if self.average == "weighted":
             weights = matrix.sum(dim=1)
             weights = weights[valid]
             weights = weights / weights.sum()
 
-            return (iou[valid] * weights).sum()
+            return (dice[valid] * weights).sum()

@@ -1,4 +1,4 @@
-from .base_metric import BaseMetric
+from ..base_metric import BaseMetric
 import torch
 
 

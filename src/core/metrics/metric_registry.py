@@ -1,48 +1,52 @@
 from .base_metric import BaseMetric
 
 def MetricRegistry():
+    """ 
+    A registry for metrics. This class allows you to register and retrieve metric classes based on their type and name.
     """
-        Class to register and manage metrics for evaluation during training and validation.
-    """
+
+    ## Metric registry
+    _registry = {}
     
-    def __init__(self):
-        self.train_metrics = {}
-        self.val_metrics = {}
+    @classmethod
+    def register(cls, type : str, name : str, class_instance : BaseMetric):
+        """ Method which register a new metric in the registry 
+
+        Args:
+            type (str): The type of the metric (e.g., classification, segmentation, detection).
+            name (str): The name of the metric to register.
+            class_instance (BaseMetric): The instance of the metric class to register.
+        """
         
-    
-    def register_metric(self,
-        metric_name : str,
-        metric_class : BaseMetric,
-        metric_type : str = "train"
-    ):
-        """
-            Method to register a metric function for either training or validation.
+        if type not in cls._registry:
+            cls._registry[type] = {}
+        
+        if name in cls._registry[type]:
+            print(f"Metric '{name}' already exists in the registry for type '{type}'.")
+            return
+        
+        cls._registry[type][name] = class_instance
+        
+    @classmethod
+    def get(cls, type : str, name : str, config : dict = {}):
+        """ Method which return the metric class instance from the registry
 
-            Args:
-                metric_name (str): Name of the metric to be registered.
-                metric_class (BaseMetric): Class of the metric to be registered.
-                metric_type (str): Type of the metric, either "train" or "val".
-        """
-        if metric_type == "train":
-            self.train_metrics[metric_name] = metric_class()
-        elif metric_type == "val":
-            self.val_metrics[metric_name] = metric_class()
-        else:
-            raise ValueError("metric_type must be either 'train' or 'val'")
-    
-    def get_metrics(self, metric_type : str = "train"):
-        """
-            Method to retrieve the registered metrics for either training or validation.
+        Args:
+            type (str): The type of the metric (e.g., classification, segmentation, detection).
+            name (str): The name of the metric to retrieve.
+            config (dict, optional): The configuration dictionary for the metric. Defaults to {}.
+        Raises:
+            ValueError: If the metric type or name is not registered in the registry.
 
-            Args:
-                metric_type (str): Type of the metrics to retrieve, either "train" or "val".
-
-            Returns:
-                dict: Dictionary of registered metrics.
+        Returns:
+            BaseMetric: The metric object.
         """
-        if metric_type == "train":
-            return self.train_metrics
-        elif metric_type == "val":
-            return self.val_metrics
-        else:
-            raise ValueError("metric_type must be either 'train' or 'val'")
+        
+        if type not in cls._registry:
+            raise ValueError(f"Unknown metric type: {type}")
+        
+        if name not in cls._registry[type]:
+            raise ValueError(f"Unknown metric name: {name}")
+        
+        return cls._registry[type][name](**config)
+        
